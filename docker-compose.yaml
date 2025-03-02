@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # NATS Server with JetStream
+  nats:
+    image: nats:latest
+    ports:
+      - "4222:4222" # Client port
+    volumes:
+      - nats-data:/data
+    command: "--jetstream --store_dir=/data"
+    networks:
+      - app-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: microservices_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Gateway Service
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run start:gateway
+    ports:
+      - "3000:3000" # HTTP port
+    environment:
+      NATS_URL: nats://nats:4222
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: microservices_db
+      GATEWAY_PORT: 3000
+    depends_on:
+      - nats
+      - postgres
+    networks:
+      - app-network
+
+  # User Service
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run start:user-service
+    environment:
+      NATS_URL: nats://nats:4222
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: microservices_db
+    depends_on:
+      - nats
+      - postgres
+    networks:
+      - app-network
+
+  # Product Service
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run start:product-service
+    environment:
+      NATS_URL: nats://nats:4222
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: microservices_db
+    depends_on:
+      - nats
+      - postgres
+    networks:
+      - app-network
+
+  # Order Service
+  order-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run start:order-service
+    environment:
+      NATS_URL: nats://nats:4222
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: microservices_db
+    depends_on:
+      - nats
+      - postgres
+    networks:
+      - app-network
+
+# Volumes for persistence
+volumes:
+  nats-data:
+  postgres-data:
+
+# Network for communication
+networks:
+  app-network:
+    driver: bridge
