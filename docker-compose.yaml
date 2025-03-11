@@ -28,7 +28,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c "npx prisma migrate deploy && node dist/apps/gateway/main.js"
+    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && node dist/apps/gateway/main.js"
     ports:
       - "3000:3000"
     environment:
@@ -45,7 +45,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c "npx prisma migrate deploy && node dist/apps/user-service/main.js"
+    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && node dist/apps/user-service/main.js"
     environment:
       NATS_URL: nats://nats:4222
       DATABASE_URL: postgresql://user:password@postgres:5432/microservices_db?schema=public
@@ -59,7 +59,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c "npx prisma migrate deploy && node dist/apps/product-service/main.js"
+    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && node dist/apps/product-service/main.js"
     environment:
       NATS_URL: nats://nats:4222
       DATABASE_URL: postgresql://user:password@postgres:5432/microservices_db?schema=public
@@ -73,7 +73,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c "npx prisma migrate deploy && node dist/apps/order-service/main.js"
+    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && node dist/apps/order-service/main.js"
     environment:
       NATS_URL: nats://nats:4222
       DATABASE_URL: postgresql://user:password@postgres:5432/microservices_db?schema=public

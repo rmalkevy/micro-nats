@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { GatewayController } from './gateway.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CommonModule } from '@app/common';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    CommonModule,
     ClientsModule.registerAsync([
       {
         name: 'USER_SERVICE',
