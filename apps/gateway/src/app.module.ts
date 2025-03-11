@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GatewayController } from './gateway.controller';
+import { GatewayController } from './app.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CommonModule } from '@app/common';

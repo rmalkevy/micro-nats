@@ -22,6 +22,8 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/nest-cli.json ./nest-cli.json
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/libs/ ./libs/
+COPY wait-for-db.sh ./wait-for-db.sh
+RUN apk add --no-cache netcat-openbsd
 
 EXPOSE 3000
 
