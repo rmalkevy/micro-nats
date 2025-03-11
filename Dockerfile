@@ -1,22 +1,25 @@
-# Base image
+# Base image for building
 FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
 # Copy root configuration files
 COPY package*.json ./
 COPY nest-cli.json ./
 COPY tsconfig.json ./
+COPY prisma ./prisma/
+COPY prisma/migrations ./prisma/migrations/
 
 # Install dependencies
 RUN npm install
 
+# Generate Prisma client
+RUN npx prisma generate
+
 # Copy all source files
 COPY apps/ ./apps/
-COPY tsconfig.json ./
 
-# Build all apps (monorepo)
+# Build all apps
 RUN npm run build:gateway && \
     npm run build:user && \
     npm run build:product && \
@@ -33,6 +36,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/nest-cli.json ./nest-cli.json
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/prisma ./prisma/
 
 # Expose port (only for gateway)
 EXPOSE 3000

@@ -1,18 +1,16 @@
 version: '3.8'
 
 services:
-  # NATS Server with JetStream
   nats:
     image: nats:latest
     ports:
-      - "4222:4222" # Client port
+      - "4222:4222"
     volumes:
       - nats-data:/data
     command: "--jetstream --store_dir=/data"
     networks:
       - app-network
 
-  # PostgreSQL Database
   postgres:
     image: postgres:latest
     environment:
@@ -26,21 +24,16 @@ services:
     networks:
       - app-network
 
-  # Gateway Service
   gateway:
     build:
       context: .
       dockerfile: Dockerfile
-    command: node dist/apps/gateway/main.js
+    command: sh -c "npx prisma migrate deploy && node dist/apps/gateway/main.js"
     ports:
-      - "3000:3000" # HTTP port
+      - "3000:3000"
     environment:
       NATS_URL: nats://nats:4222
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: microservices_db
+      DATABASE_URL: postgresql://user:password@postgres:5432/microservices_db?schema=public
       GATEWAY_PORT: 3000
     depends_on:
       - nats
@@ -48,69 +41,52 @@ services:
     networks:
       - app-network
 
-  # User Service
   user-service:
     build:
       context: .
       dockerfile: Dockerfile
-    command: node dist/apps/user-service/main.js
+    command: sh -c "npx prisma migrate deploy && node dist/apps/user-service/main.js"
     environment:
       NATS_URL: nats://nats:4222
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: microservices_db
+      DATABASE_URL: postgresql://user:password@postgres:5432/microservices_db?schema=public
     depends_on:
       - nats
       - postgres
     networks:
       - app-network
 
-  # Product Service
   product-service:
     build:
       context: .
       dockerfile: Dockerfile
-    command: node dist/apps/product-service/main.js
+    command: sh -c "npx prisma migrate deploy && node dist/apps/product-service/main.js"
     environment:
       NATS_URL: nats://nats:4222
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: microservices_db
+      DATABASE_URL: postgresql://user:password@postgres:5432/microservices_db?schema=public
     depends_on:
       - nats
       - postgres
     networks:
       - app-network
 
-  # Order Service
   order-service:
     build:
       context: .
       dockerfile: Dockerfile
-    command: node dist/apps/order-service/main.js
+    command: sh -c "npx prisma migrate deploy && node dist/apps/order-service/main.js"
     environment:
       NATS_URL: nats://nats:4222
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: microservices_db
+      DATABASE_URL: postgresql://user:password@postgres:5432/microservices_db?schema=public
     depends_on:
       - nats
       - postgres
     networks:
       - app-network
 
-# Volumes for persistence
 volumes:
   nats-data:
   postgres-data:
 
-# Network for communication
 networks:
   app-network:
     driver: bridge
