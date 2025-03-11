@@ -52,4 +52,4 @@ import { CommonModule } from '@app/common';
   ],
   controllers: [GatewayController],
 })
-export class GatewayModule {}
+export class AppModule {}
