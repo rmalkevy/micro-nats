@@ -14,7 +14,7 @@ describe('ProductServiceController', () => {
 
   describe('root', () => {
     it('should return a product', () => {
-      expect(productController.getProduct()).toStrictEqual({
+      expect(productController.getProduct({ id: 1 })).toStrictEqual({
         id: 1,
         name: 'Laptop',
         price: 999,

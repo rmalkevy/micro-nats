@@ -1,5 +1,14 @@
-import { Controller, Get, Inject, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Body,
+  Query,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ClientNats } from '@nestjs/microservices';
+import { CreateProductDto } from '../../product-service/src/dto/create-product.dto';
 
 @Controller()
 export class GatewayController {
@@ -15,8 +24,13 @@ export class GatewayController {
   }
 
   @Get('product')
-  getProduct() {
-    return this.productClient.send('get_product', {});
+  getProduct(@Query('id', ParseIntPipe) id: number) {
+    return this.productClient.send('get_product', { id });
+  }
+
+  @Post('product')
+  createProduct(@Body() productData: CreateProductDto) {
+    return this.productClient.send('create_product', productData);
   }
 
   @Post('order')
