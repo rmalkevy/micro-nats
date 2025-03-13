@@ -16,7 +16,7 @@ async function bootstrap() {
 
   // Create a stream
   await jsm.streams.add({
-    name: 'EVENTS',
+    name: 'EVENTS_STREAM',
     subjects: ['events.>'],
     storage: 'file' as StorageType,
     max_msgs: 1000000,

@@ -30,10 +30,13 @@ services:
   gateway:
     build:
       context: .
-      dockerfile: Dockerfile
-    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && node dist/apps/gateway/main.js"
+      dockerfile: Dockerfile.dev
+    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && npm run start:dev:gateway"
     ports:
       - "3000:3000"
+    volumes:
+      - ./apps/gateway:/app/apps/gateway
+      - ./libs:/app/libs
     env_file:
       - .env
     depends_on:
@@ -47,8 +50,11 @@ services:
   user-service:
     build:
       context: .
-      dockerfile: Dockerfile
-    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && node dist/apps/user-service/main.js"
+      dockerfile: Dockerfile.dev
+    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && npm run start:dev:user-service"
+    volumes:
+      - ./apps/user-service:/app/apps/user-service
+      - ./libs:/app/libs
     env_file:
       - .env
     depends_on:
@@ -62,8 +68,11 @@ services:
   product-service:
     build:
       context: .
-      dockerfile: Dockerfile
-    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && node dist/apps/product-service/main.js"
+      dockerfile: Dockerfile.dev
+    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && npm run start:dev:product-service"
+    volumes:
+      - ./apps/product-service:/app/apps/product-service
+      - ./libs:/app/libs
     env_file:
       - .env
     depends_on:
@@ -77,8 +86,11 @@ services:
   order-service:
     build:
       context: .
-      dockerfile: Dockerfile
-    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && node dist/apps/order-service/main.js"
+      dockerfile: Dockerfile.dev
+    command: sh -c "npx prisma migrate deploy --schema libs/common/prisma/schema.prisma && npm run start:dev:order-service"
+    volumes:
+      - ./apps/order-service:/app/apps/order-service  # Mount local order-service source
+      - ./libs:/app/libs
     env_file:
       - .env
     depends_on:

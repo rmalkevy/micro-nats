@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { Product } from '@prisma/client';
+import { CreateProductDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -15,6 +16,14 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException(`Product with ID ${data.id} not found`);
     }
+    return product;
+  }
+
+  @MessagePattern('create_product')
+  async createProduct(data: CreateProductDto): Promise<Product> {
+    const product: Product = await this.prisma.product.create({
+      data: data,
+    });
     return product;
   }
 }

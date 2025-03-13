@@ -1,20 +1,24 @@
-import { Controller } from '@nestjs/common';
+import { Controller, NotFoundException } from '@nestjs/common';
 import { MessagePattern, ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { PrismaService } from '@app/common';
+import { Order } from '@prisma/client';
 
 @Controller()
-export class AppController {
+export class OrderController {
   constructor(
     private readonly prisma: PrismaService,
     @Inject('NATS_CLIENT') private readonly natsClient: ClientProxy,
   ) {}
 
   @MessagePattern('create_order')
-  async createOrder(data: { id: number }) {
+  async createOrder(data: { id: number }): Promise<Order> {
     const order = await this.prisma.order.create({
-      data: { id: data.id, status: 'created' },
+      data: { id: data.id, status: 'created', userId: 1, productId: 1 },
     });
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${data.id} not found`);
+    }
     // Publish to NATS JetStream
     this.natsClient.emit('events.order.created', {
       orderId: order.id,
