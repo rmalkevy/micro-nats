@@ -26,4 +26,9 @@ export class OrderController {
     });
     return order;
   }
+
+  @MessagePattern('health_check.order-service')
+  healthCheck() {
+    return { status: 'ok', service: 'order-service' };
+  }
 }

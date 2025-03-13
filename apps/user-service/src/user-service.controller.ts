@@ -7,4 +7,9 @@ export class UserController {
   getUser() {
     return { id: 1, name: 'John Doe' }; // Mock response
   }
+
+  @MessagePattern('health_check.user-service')
+  healthCheck() {
+    return { status: 'ok', service: 'user-service' };
+  }
 }

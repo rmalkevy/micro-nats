@@ -18,4 +18,9 @@ export class ProductController {
   async createProduct(data: CreateProductDto): Promise<Product> {
     return this.productService.createProduct(data);
   }
+
+  @MessagePattern('health_check.product-service')
+  healthCheck() {
+    return { status: 'ok', service: 'product-service' };
+  }
 }
