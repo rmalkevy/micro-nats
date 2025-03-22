@@ -44,6 +44,8 @@ services:
         condition: service_started
       postgres:
         condition: service_healthy
+    labels:
+      - "job=gateway"
     networks:
       - app-network
 
@@ -62,6 +64,8 @@ services:
         condition: service_started
       postgres:
         condition: service_healthy
+    labels:
+      - "job=user-service"
     networks:
       - app-network
 
@@ -80,6 +84,8 @@ services:
         condition: service_started
       postgres:
         condition: service_healthy
+    labels:
+      - "job=product-service"
     networks:
       - app-network
 
@@ -98,6 +104,8 @@ services:
         condition: service_started
       postgres:
         condition: service_healthy
+    labels:
+      - "job=order-service"
     networks:
       - app-network
 
@@ -133,8 +141,9 @@ services:
     ports:
       - "3100:3100"
     volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml
       - loki-data:/loki
-    command: "-config.file=/etc/loki/local-config.yaml"
+    command: "-config.file=/etc/loki/loki-config.yml"
     networks:
       - app-network
 
@@ -142,7 +151,7 @@ services:
     image: grafana/promtail:latest
     volumes:
       - ./promtail-config.yml:/etc/promtail/config.yml
-      - /var/log:/var/log # Mount host logs; adjust as needed
+      - /var/run/docker.sock:/var/run/docker.sock
     command: "-config.file=/etc/promtail/config.yml"
     depends_on:
       - loki
